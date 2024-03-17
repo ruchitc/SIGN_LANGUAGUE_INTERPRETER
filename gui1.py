@@ -16,7 +16,7 @@ class VideoPlayerApp:
 
         # Placeholder image
         self.placeholder_image = tk.PhotoImage(
-            file="F:\Automatic-Indian-Sign-Language-Translator-ISL-master\SIGN LANGUAGE INTERPRETER\capa-blogpost-cultura-surda.png"
+            file="C:\\Users\\ruchi\\Code\\SignLanguageInterpreter\\SIGN_LANGUAGUE_INTERPRETER\\capa-blogpost-cultura-surda.png"
         )  # Replace with your placeholder image path
         self.image_label = tk.Label(root, image=self.placeholder_image)
         self.image_label.pack(pady=10)
@@ -31,8 +31,10 @@ class VideoPlayerApp:
         self.text_entry.pack(pady=10)
 
         # Text widget to display the entered text
-        self.text_display = tk.Text(root, wrap="word", height=3, font=("Helvetica", 14, "bold"))
+        self.text_display = tk.Text(root, state="disabled", wrap="word", height=3, font=("Helvetica", 14, "bold"))
         self.text_display.pack(pady=5)
+        self.text_display.tag_config('available', foreground='green')
+        self.text_display.tag_config('unavailable', foreground='red')
 
         # Create a frame for buttons
         self.button_frame = ttk.Frame(root)
@@ -56,6 +58,7 @@ class VideoPlayerApp:
     def play_video(self):
         # Get the video filename based on the entered text
         text = self.entry_var.get()
+        input_words = text.split(' ')
         video_list = keywords.find_keywords(text)
 
         self.video_queue.clear()
@@ -65,6 +68,15 @@ class VideoPlayerApp:
             if video_filename:
                 self.video_queue.append((video_filename, video))
 
+        self.text_display.config(state='normal')
+        self.text_display.delete(1.0, tk.END)
+        for word in input_words:
+            if word in video_list:
+                self.text_display.insert(tk.END, f"{word} ", 'available')
+            else:
+                self.text_display.insert(tk.END, f"{word} ", 'unavailable')
+        self.text_display.config(state='disabled')
+
         self.play_next_video()
 
     def get_video_filename(self, text):
@@ -72,7 +84,7 @@ class VideoPlayerApp:
         # For example, you might query a database to get the filename
         # Here, we'll assume the videos are stored in the "videos" folder with the same name as the entered text
         video_folder = Path(
-            "F:/Automatic-Indian-Sign-Language-Translator-ISL-master/SIGN LANGUAGE INTERPRETER/mp4_dataset")
+            "C:\\Users\\ruchi\\Code\\SignLanguageInterpreter\\SIGN_LANGUAGUE_INTERPRETER\\trimmed_new")
         video_filename = video_folder / (text + ".mp4")
         if video_filename.is_file():
             return str(video_filename)
@@ -103,8 +115,8 @@ class VideoPlayerApp:
             player.play()
 
             # Update the text widget with the entered text
-            self.text_display.delete(1.0, tk.END)
-            self.text_display.insert(tk.END, f"Text: {video_text}", "green")
+            # self.text_display.delete(1.0, tk.END)
+            # self.text_display.insert(tk.END, f"Text: {video_text}", "green")
 
             self.current_player = player
             # Decrease the delay between videos (adjust the value in milliseconds)
